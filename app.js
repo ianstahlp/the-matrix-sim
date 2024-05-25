@@ -166,3 +166,5 @@ document.getElementById('toggleColorButton').addEventListener('click', toggleCol
 // Initial color update
 updateColors();
 drawGrid();
+
+
