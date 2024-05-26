@@ -11,6 +11,12 @@ body {
     margin: 0;
 }
 
+@media only screen and (max-width: 500px) {
+    body {
+        flex-direction: column;
+    }
+}
+
 canvas {
     border: 1px solid #e0e0e0;
     margin-bottom: 20px;
@@ -67,7 +73,9 @@ button {
 button:hover {
     background-color: #45a049;
 }
-
+small {
+    font-size: 10pt;
+}
 input[type="range"] {
     margin-left: 10px;
 }
@@ -77,4 +85,11 @@ input[type="number"] {
     padding: 5px;
     border-radius: 5px;
     border: 1px solid #ccc;
+}
+
+.border {
+    border: 1px solid #dcdc;
+    padding: 10px;
+    display: flex;
+    flex-flow: column;
 }
