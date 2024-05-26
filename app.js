@@ -1,10 +1,10 @@
 // Human-controlled variables
 const cols = 60;
 const rows = 60;
-const cellSize = 14; // Adjusted cell size to account for the margin
+let margin = 1; // Margin between cells
+let cellSize = 15 - margin; // Adjusted cell size to account for the margin
 
 // Initial States (could be human-controlled, but don't change often)
-const margin = 1; // Margin between cells (not happy with this, don't increase or it will look bad)
 const colorStep = 1;
 let baseIntervalSpeed = 5; // Default speed set to 5 milliseconds
 let colorTransition = false; // Rainbow effect off by default
@@ -14,7 +14,7 @@ const initialColor = [1, 236, 1]; // Initial color in rgba
 let glowEffect = false; // Glow effect off by default
 
 // Machine-controlled variables
-const nodeSize = cellSize / 2; // Size of each node in pixels
+let nodeSize = cellSize / 2; // Size of each node in pixels
 
 let hue = 0;
 let hueDirection = 1;
@@ -167,6 +167,17 @@ function toggleGlowEffect() {
     glowEffect = !glowEffect;
 }
 
+// Update margin
+function updateMargin(event) {
+    margin = parseInt(event.target.value, 10);
+    cellSize = 15 - margin;
+    nodeSize = cellSize / 2;
+    canvas.width = cols * (cellSize + margin);
+    canvas.height = rows * (cellSize + margin);
+    trails = Array.from({ length: cols }, () => []); // Reset trails
+    drawGrid(); // Redraw grid with new margin
+}
+
 // Event listeners
 document.getElementById('startButton').addEventListener('click', toggleIteration);
 document.getElementById('toggleColorButton').addEventListener('click', toggleColorTransition);
@@ -176,6 +187,7 @@ document.getElementById('trailLengthInput').addEventListener('input', (event) =>
     trailLength = parseInt(event.target.value, 10);
     trails = Array.from({ length: cols }, () => []); // Reset trails
 });
+document.getElementById('marginInput').addEventListener('input', updateMargin);
 
 // Initial draw
 updateColors();
