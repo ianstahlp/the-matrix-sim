@@ -9,7 +9,12 @@ body {
 canvas {
     background-color: #000;
 }
-button {
+button, input {
+    display: block;
     margin: 5px;
+}
+p, label {
+    color: #fff;
+    text-decoration: underline;
 }
 
