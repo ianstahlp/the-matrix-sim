@@ -1,15 +1,17 @@
 // Human-controlled variables
-const cols = 80;
+const cols = 60;
 const rows = 60;
-const cellSize = 15; // Adjusted cell size to account for the margin
+const cellSize = 14; // Adjusted cell size to account for the margin
 
 // Initial States (could be human-controlled, but don't change often)
-const margin = 0; // Margin between cells (not happy with this, don't increase or it will look bad)
+const margin = 1; // Margin between cells (not happy with this, don't increase or it will look bad)
 const colorStep = 1;
 let baseIntervalSpeed = 5; // Default speed set to 5 milliseconds
-let colorTransition = true;
+let colorTransition = false; // Rainbow effect off by default
 let direction = 'down';
 let trailLength = 20; // Initial tail length
+const initialColor = [1, 236, 1]; // Initial color in rgba
+let glowEffect = false; // Glow effect off by default
 
 // Machine-controlled variables
 const nodeSize = cellSize / 2; // Size of each node in pixels
@@ -56,25 +58,39 @@ function drawGrid() {
     for (let i = 0; i < trails.length; i++) {
         for (let j = 0; j < trails[i].length; j++) {
             const { col, row } = trails[i][j];
-            drawCell(col, row, (trailLength - j) / trailLength);
+            drawCell(col, row, (trailLength - j) / trailLength, false);
         }
     }
 
     // Draw leading cells
     for (let cell of selectedCells) {
-        drawCell(cell.col, cell.row, 1);
+        drawCell(cell.col, cell.row, 1, true);
     }
 }
 
 // Draw cell
-function drawCell(col, row, opacity) {
-    const rgb = hslToRgb(hue / 360, 1, 0.5);
+function drawCell(col, row, opacity, isLeading) {
+    let rgb;
+    if (isLeading) {
+        rgb = [255, 255, 255]; // White color for leading cell
+    } else {
+        rgb = colorTransition ? hslToRgb(hue / 360, 1, 0.5) : initialColor; // Shade of green for tail
+    }
     const colors = [
         `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${opacity})`,
         `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${opacity * 0.75})`,
         `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${opacity * 0.5})`,
         `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${opacity * 0.25})`
     ];
+
+    if (glowEffect) {
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.75)`;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+    } else {
+        ctx.shadowBlur = 0;
+    }
 
     const x = col * (cellSize + margin);
     const y = row * (cellSize + margin);
@@ -146,10 +162,16 @@ function toggleDirection() {
     document.getElementById('directionButton').textContent = `Direction: ${direction.charAt(0).toUpperCase() + direction.slice(1)}`;
 }
 
+// Toggle glow effect
+function toggleGlowEffect() {
+    glowEffect = !glowEffect;
+}
+
 // Event listeners
 document.getElementById('startButton').addEventListener('click', toggleIteration);
 document.getElementById('toggleColorButton').addEventListener('click', toggleColorTransition);
 document.getElementById('directionButton').addEventListener('click', toggleDirection);
+document.getElementById('toggleGlowButton').addEventListener('click', toggleGlowEffect);
 document.getElementById('trailLengthInput').addEventListener('input', (event) => {
     trailLength = parseInt(event.target.value, 10);
     trails = Array.from({ length: cols }, () => []); // Reset trails
